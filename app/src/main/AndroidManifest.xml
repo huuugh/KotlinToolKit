@@ -3,13 +3,22 @@
     package="com.hugh.kit">
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:label="task2"
+            android:launchMode="singleTask"
+            android:name=".activity.SecondActivity"
+            android:taskAffinity="com.hugh.kit.second" />
+        <activity
+            android:label="task1"
+            android:name=".activity.MainActivity"
+            android:taskAffinity="com.hugh.kit.first">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
