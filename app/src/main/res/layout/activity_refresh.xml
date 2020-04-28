@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.hugh.kit.views.RefreshLayout
+        android:layout_width="match_parent"
+        android:id="@+id/refresh"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="cccccc"
+            android:gravity="center"/>
+
+        <RelativeLayout
+            android:background="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="底部"
+                android:gravity="center"
+                android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
+
+    </com.hugh.kit.views.RefreshLayout>
+
+</RelativeLayout>

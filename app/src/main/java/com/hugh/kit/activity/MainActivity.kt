@@ -3,8 +3,8 @@ package com.hugh.kit.activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.hugh.kit.App
 import com.hugh.kit.R
 import com.hugh.kit.utils.JumpUtil
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (url != null) {
             outState?.putString("url", url);

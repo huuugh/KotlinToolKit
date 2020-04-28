@@ -1,7 +1,9 @@
 package com.hugh.kit.views
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -11,8 +13,11 @@ import android.view.ViewGroup
  * Created by Hugh on 2020/4/27.
  */
 class RefreshLayout : ViewGroup {
+    private var mTheLastPosition: Int = 0;
+    private var mListener: OnRefreshListener? = null
+    private var mStatus = STATUS.NORMAL
     private var mIsDragging: Boolean = false
-    private val mOffsetTop = 0
+    private var mOffsetTop = 0
     private var mHeaderView: View? = null
     private var mHeaderHeight = 0
     private var mDistanceToTriggerSync = -1
@@ -24,6 +29,11 @@ class RefreshLayout : ViewGroup {
     constructor(context: Context?) : super(context) {}
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {}
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
+
+    private enum class STATUS {
+        NORMAL, LOOSEN, REFRESHING
+    }
+
 
     init {
         mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop;
@@ -39,8 +49,10 @@ class RefreshLayout : ViewGroup {
         val childLeft = paddingLeft
         val childRight = measuredWidth + childLeft
         val childTop = mOffsetTop + paddingTop
-        val childBottom = measuredHeight + childTop
-        child0.layout(childLeft, childTop, childRight, childBottom)
+        child0.layout(childLeft, childTop - child0.measuredHeight, childRight, child0.measuredHeight)
+
+        val child1 = getChildAt(1);
+        child1.layout(childLeft, childTop, childRight, child0.measuredHeight + child1.measuredHeight)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -72,28 +84,41 @@ class RefreshLayout : ViewGroup {
             mIsDragging = false;
         } else if (action == MotionEvent.ACTION_POINTER_DOWN) {
         } else if (action == MotionEvent.ACTION_MOVE) {
-            val pointerIndex = event.findPointerIndex(mActivePointerId)
-            //	Returns either the index of the pointer (for use with getX(int) et al.),
-            //	or -1 if there is no data available for that pointer identifier.
-            if (pointerIndex == -1) {
-                return false;
-            }
-            var moveY = event.getY(pointerIndex)
-            var yDiff = y - mDownMotionY
-            if (!mIsDragging && yDiff > mTouchSlop) {
-                mIsDragging = true;
-            }
-            if (mIsDragging){
-                if (yDiff>mDistanceToTriggerSync)
+            var moveY = event.y
+            mOffsetTop = (moveY - mDownMotionY).toInt();
+//            Log.e("Refresh", "moveY:$moveY  mOffsetTop:$mOffsetTop")
+            var height = getChildAt(0).measuredHeight
+            Log.e("Refresh", "height:$height")
+            if (mOffsetTop in 0..height) {
+                requestLayout()
+                mTheLastPosition = mOffsetTop
             }
         } else if (action == MotionEvent.ACTION_UP) {
+            returnToInitial();
         }
         return true
     }
 
+    private fun returnToInitial() {
+        val animator = ValueAnimator.ofInt(mTheLastPosition, 0);
+        animator.addUpdateListener(ValueAnimator.AnimatorUpdateListener {
+            var value = it.animatedValue;
+            mOffsetTop = value as Int;
+            requestLayout()
+        })
+        animator.duration = 500;
+        animator.start()
+    }
+
     interface OnRefreshListener {
         fun onNormal()
+
         fun onLoose()
+
         fun onRefresh()
+    }
+
+    fun setOnRefreshListener(mListener: OnRefreshListener) {
+        this.mListener = mListener;
     }
 }
